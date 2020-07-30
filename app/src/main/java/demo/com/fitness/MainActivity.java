@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -12,6 +13,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+//import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,6 +33,7 @@ import java.util.List;
 import demo.com.fitness.adapters.EventsAdapter;
 import demo.com.fitness.data.Event;
 import demo.com.fitness.data.MainViewModel;
+import demo.com.fitness.data.Teacher;
 import demo.com.fitness.utils.JSONUtils;
 import demo.com.fitness.utils.NetworkUtils;
 
@@ -54,6 +66,49 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         eventsAdapter = new EventsAdapter();
 
         eventsAdapter.setViewModel(viewModel);
+
+
+        eventsAdapter.setOnEventClickListener(new EventsAdapter.OnEventClickListener() {
+            @Override
+            public void OnEventClick(int position) {
+
+                List<Event> events = eventsAdapter.getEvents();
+
+                Event event = events.get(position);
+
+                Teacher teacher = viewModel.getTeacherByName(event.getTeacher());
+
+//                Toast.makeText(MainActivity.this, Integer.toString(position), Toast.LENGTH_SHORT).show();
+
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                        MainActivity.this,R.style.BottomSheetDialogTheme);
+
+
+                View bottomSheetView = LayoutInflater.from(getApplicationContext())
+                        .inflate(R.layout.layout_bottom_sheet,
+                                (LinearLayout)findViewById(R.id.bottomSheetContainer)
+                        );
+
+                TextView Name = bottomSheetView.findViewById(R.id.textViewName);
+                TextView shortName = bottomSheetView.findViewById(R.id.textViewShortName);
+                TextView teacherposition = bottomSheetView.findViewById(R.id.textViewPosition);
+
+                ImageView imageView = bottomSheetView.findViewById(R.id.imageView);
+
+                Name.setText(teacher.getName());
+                shortName.setText(teacher.getShort_name());
+                teacherposition.setText(teacher.getPosition());
+
+                Picasso.get().load(teacher.getImageUrl()).into(imageView);
+
+                bottomSheetDialog.setContentView(bottomSheetView);
+                bottomSheetDialog.show();
+
+
+            }
+        });
+
+
 
         recyclerViewEvents.setAdapter(eventsAdapter);
 

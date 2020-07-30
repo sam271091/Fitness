@@ -22,9 +22,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
 
     private List<Event> events;
     private MainViewModel viewModel;
+    private OnEventClickListener onEventClickListener;
 
     public EventsAdapter() {
         events = new ArrayList<Event>();
+    }
+
+    public interface OnEventClickListener {
+         void OnEventClick(int position);
+    }
+
+
+    public void setOnEventClickListener(OnEventClickListener onEventClickListener) {
+        this.onEventClickListener = onEventClickListener;
     }
 
     @NonNull
@@ -82,6 +92,17 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
           textViewendTime = itemView.findViewById(R.id.textViewendTime);
           textViewweekDay = itemView.findViewById(R.id.textViewweekDay);
           imageViewTeacherPic = itemView.findViewById(R.id.imageViewTeacherPic);
+
+          itemView.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+
+                  if (onEventClickListener != null){
+                      onEventClickListener.OnEventClick(getAdapterPosition());
+                  }
+
+              }
+          });
 
       }
   }
